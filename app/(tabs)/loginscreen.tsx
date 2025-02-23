@@ -1,10 +1,10 @@
 import { useState } from 'react';
-import { StyleSheet, TextInput, TouchableOpacity, Alert } from 'react-native';
+import { StyleSheet, TextInput, TouchableOpacity, Alert, Image, Platform } from 'react-native';
 import axios from 'axios';
 import { ThemedText } from '@/components/ThemedText';
 import ParallaxScrollView from '@/components/ParallaxScrollView';
 import { ThemedView } from '@/components/ThemedView';
-import { IconSymbol } from '@/components/ui/IconSymbol';
+
 
 export default function LoginScreen() {
   const [email, setEmail] = useState('');
@@ -13,32 +13,38 @@ export default function LoginScreen() {
   const handleLogin = async () => {
     try {
       const response = await axios.post('http://192.168.6.181:5000/login', { email, password });
-      Alert.alert('Success', response.data.message);
+      showAlert('Success', response.data.message);
     } catch (error) {
-      Alert.alert('Error', error.response?.data?.message || 'Something went wrong');
+      showAlert('Error', error.response?.data?.message || 'Something went wrong');
     }
   };
 
   const handleRegister = async () => {
     try {
       const response = await axios.post('http://192.168.6.181:5000/register', { email, password });
-      Alert.alert('Success', response.data.message);
+      showAlert('Success', response.data.message);
     } catch (error) {
-      Alert.alert('Error', error.response?.data?.message || 'Something went wrong');
+      showAlert('Error', error.response?.data?.message || 'Something went wrong');
+    }
+  };
+
+  const showAlert = (title, message) => {
+    if (Platform.OS === 'web') {
+      window.alert(`${title}: ${message}`);
+    } else {
+      Alert.alert(title, message);
     }
   };
 
   return (
     <ParallaxScrollView
-      headerBackgroundColor={{ light: '#f5f5f5', dark: '#252525' }}
-      headerImage={
-        <IconSymbol
-          size={100}
-          color="#808080"
-          name="person"
-          style={styles.headerImage}
-        />
-      }>
+    headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
+            headerImage={
+              <Image
+                source={require('@/assets/images/splash-icon.png')}
+                style={styles.headerImage}
+              />
+            }>
       <ThemedView style={styles.container}>
         <ThemedText type="title" style={styles.title}>
           Welcome Back!
@@ -75,7 +81,12 @@ export default function LoginScreen() {
 
 const styles = StyleSheet.create({
   container: { paddingHorizontal: 20, alignItems: 'center', gap: 16 },
-  headerImage: { alignSelf: 'center', marginTop: 40 },
+  headerImage: { alignSelf: 'center', marginTop: 40,
+    height: 225,
+    width: 430,
+    bottom: 0,
+    left: 0,
+   },
   title: { fontSize: 24, fontWeight: 'bold' },
   input: {
     width: '100%',
@@ -94,7 +105,10 @@ const styles = StyleSheet.create({
     width: '100%',
     alignItems: 'center',
   },
-  
+  MyLogo: {
+    
+    position: 'absolute',
+  },
   registerButton: {
     backgroundColor: '#4A90E2',
     paddingVertical: 14,

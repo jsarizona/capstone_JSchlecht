@@ -13,11 +13,10 @@ mongoose.connect(process.env.MONGO_URI, { useNewUrlParser: true, useUnifiedTopol
   .then(() => console.log('MongoDB Connected'))
   .catch(err => console.log(err));
 
-// User Schema
-const UserSchema = new mongoose.Schema({
-  email: String,
-  password: String
-});
+  const UserSchema = new mongoose.Schema({
+    email: { type: String, required: true, unique: true },
+    password: { type: String, required: true, minlength: 8 }
+  });
 
 const User = mongoose.model('User', UserSchema);
 
