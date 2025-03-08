@@ -1,4 +1,4 @@
-import { Tabs } from 'expo-router';
+import { Tabs, useLocalSearchParams } from 'expo-router';
 import React from 'react';
 import { Platform } from 'react-native';
 
@@ -10,6 +10,7 @@ import { useColorScheme } from '@/hooks/useColorScheme';
 
 export default function TabLayout() {
   const colorScheme = useColorScheme();
+  const { isAuthenticated } = useLocalSearchParams(); // Get authentication status from RootLayout
 
   return (
     <Tabs
@@ -19,10 +20,7 @@ export default function TabLayout() {
         tabBarButton: HapticTab,
         tabBarBackground: TabBarBackground,
         tabBarStyle: Platform.select({
-          ios: {
-            // Use a transparent background on iOS to show the blur effect
-            position: 'absolute',
-          },
+          ios: { position: 'absolute' },
           default: {},
         }),
       }}>
@@ -40,13 +38,23 @@ export default function TabLayout() {
           tabBarIcon: ({ color }) => <IconSymbol size={28} name="paperplane.fill" color={color} />,
         }}
       />
-      <Tabs.Screen
-        name="loginscreen"
-        options={{
-          title: 'Login',
-          tabBarIcon: ({ color }) => <IconSymbol size={28} name="login.fill" color={color} />,
-        }}
-      />
+      {isAuthenticated ? (
+        <Tabs.Screen
+          name="profile"
+          options={{
+            title: 'Profile',
+            tabBarIcon: ({ color }) => <IconSymbol size={28} name="person.fill" color={color} />,
+          }}
+        />
+      ) : (
+        <Tabs.Screen
+          name="loginscreen"
+          options={{
+            title: 'Login',
+            tabBarIcon: ({ color }) => <IconSymbol size={28} name="login.fill" color={color} />,
+          }}
+        />
+      )}
     </Tabs>
   );
 }

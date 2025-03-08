@@ -4,31 +4,45 @@ import axios from 'axios';
 import { ThemedText } from '@/components/ThemedText';
 import ParallaxScrollView from '@/components/ParallaxScrollView';
 import { ThemedView } from '@/components/ThemedView';
-
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function LoginScreen() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
+  //calls on pressing the login button
   const handleLogin = async () => {
     try {
-      const response = await axios.post('http://192.168.6.181:5000/login', { email, password });
+      const response = await axios.post('http://192.168.6.181:5000/api/auth/login', { email, password });
+  
+      const token = response.data.token;
+      if (token) {
+        await AsyncStorage.setItem('authToken', token);
+      }
+  
       showAlert('Success', response.data.message);
     } catch (error) {
       showAlert('Error', error.response?.data?.message || 'Something went wrong');
     }
   };
-
+  //calls on pressing the Register Button
   const handleRegister = async () => {
     try {
-      const response = await axios.post('http://192.168.6.181:5000/register', { email, password });
+      const response = await axios.post('http://192.168.6.181:5000/api/auth/register', { email, password });
+  
+      const token = response.data.token;
+      if (token) {
+        await AsyncStorage.setItem('authToken', token);
+      }
+  
       showAlert('Success', response.data.message);
     } catch (error) {
       showAlert('Error', error.response?.data?.message || 'Something went wrong');
     }
   };
+  
 
-  const showAlert = (title, message) => {
+  const showAlert = (title: string, message: string | undefined) => {
     if (Platform.OS === 'web') {
       window.alert(`${title}: ${message}`);
     } else {
@@ -106,7 +120,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   MyLogo: {
-    
     position: 'absolute',
   },
   registerButton: {
