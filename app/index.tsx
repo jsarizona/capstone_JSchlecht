@@ -1,12 +1,14 @@
-import { useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { StyleSheet, TextInput, TouchableOpacity, Alert, Image, Platform } from 'react-native';
 import axios from 'axios';
 import { ThemedText } from '@/components/ThemedText';
 import ParallaxScrollView from '@/components/ParallaxScrollView';
 import { ThemedView } from '@/components/ThemedView';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import {useAuth } from '../context/AuthContext';
 
-export default function LoginScreen() {
+export default function loginScreen() {
+  const {onLogin} = useAuth();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
@@ -14,18 +16,17 @@ export default function LoginScreen() {
   const handleLogin = async () => {
     try {
       const response = await axios.post('http://192.168.6.181:5000/api/auth/login', { email, password });
-  
-      const token = response.data.token;
-      if (token) {
-        await AsyncStorage.setItem('authToken', token);
+      const { token, user } = response.data; // assuming your response contains user data as well
+      if (token && user) {
+        onLogin!(token, user); // Pass token and user data to the login function
+        showAlert('Success', response.data.message);
       }
-  
-      showAlert('Success', response.data.message);
     } catch (error) {
       showAlert('Error', error.response?.data?.message || 'Something went wrong');
     }
   };
-  //calls on pressing the Register Button
+
+  //calls on pressing the Register Button`
   const handleRegister = async () => {
     try {
       const response = await axios.post('http://192.168.6.181:5000/api/auth/register', { email, password });
@@ -82,10 +83,10 @@ export default function LoginScreen() {
           onChangeText={setPassword}
         />
 
-        <TouchableOpacity style={styles.loginButton} onPress={handleLogin}>
+        <TouchableOpacity style={styles.button} onPress={handleLogin}>
           <ThemedText style={styles.buttonText}>Login</ThemedText>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.loginButton} onPress={handleRegister}>
+        <TouchableOpacity style={styles.button} onPress={handleRegister}>
           <ThemedText style={styles.buttonText}>Register</ThemedText>
         </TouchableOpacity>
       </ThemedView>
@@ -94,7 +95,7 @@ export default function LoginScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { paddingHorizontal: 20, alignItems: 'center', gap: 16 },
+  container: { paddingHorizontal: 100, alignItems: 'center', gap: 16 },
   headerImage: { alignSelf: 'center', marginTop: 40,
     height: 225,
     width: 430,
@@ -103,7 +104,7 @@ const styles = StyleSheet.create({
    },
   title: { fontSize: 24, fontWeight: 'bold' },
   input: {
-    width: '100%',
+    width: '35%',
     height: 50,
     borderColor: '#808080',
     borderWidth: 1,
@@ -111,12 +112,12 @@ const styles = StyleSheet.create({
     paddingHorizontal: 15,
     fontSize: 16,
   },
-  loginButton: {
+  button: {
     backgroundColor: '#4A90E2',
     paddingVertical: 14,
     paddingHorizontal: 30,
     borderRadius: 10,
-    width: '100%',
+    width: '50%',
     alignItems: 'center',
   },
   MyLogo: {
@@ -127,7 +128,7 @@ const styles = StyleSheet.create({
     paddingVertical: 14,
     paddingHorizontal: 30,
     borderRadius: 10,
-    width: '100%',
+    width: '50%',
     alignItems: 'center',
   },
   buttonText: { color: '#FFF', fontSize: 18, fontWeight: 'bold' },

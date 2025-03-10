@@ -7,7 +7,7 @@ const router = express.Router();
 
 // Login Route
 router.post('/login', async (req, res) => {
-  console.log('Attempting Log In');
+  
   console.log(req.body);
   const { email, password } = req.body;
 
@@ -17,8 +17,19 @@ router.post('/login', async (req, res) => {
   const isMatch = await bcrypt.compare(password, user.password);
   if (!isMatch) return res.status(400).json({ message: 'Invalid password' });
 
-  const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: '1h' });
-  res.json({ token, message: 'Login successful' });
+  const token = jwt.sign({ id: user.email }, process.env.JWT_SECRET, { expiresIn: '1h' });
+  console.log('Attempting Log In');
+  // Send both the token and the user data in the response
+  res.json({
+    token,
+    user: {
+      email: user.email,
+      name: user.name,
+      role: user.role, // make sure to include the role if needed
+    },
+    message: 'Login successful'
+  });
+  console.log('LoginSuccessfull');
 });
 
 // Register Route
