@@ -9,11 +9,11 @@ import { router } from 'expo-router';
 import {useAuth } from '@/context/AuthContext';
 
 export default function profileScreen() {
-  const {logout} = useAuth();
+  const {onLogout} = useAuth();
 
   const handleLogout = async () => {
     try {
-      logout?.()
+      onLogout?.()
       router.replace('/'); // Redirect to login screen after logout
     } catch (error) {
       console.error("Logout failed:", error);
