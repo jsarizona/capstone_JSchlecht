@@ -16,7 +16,7 @@ export default function loginScreen() {
   const handleLogin = async () => {
     try {
       const response = await axios.post('http://192.168.6.181:5000/api/auth/login', { email, password });
-      const { token, user } = response.data; // assuming your response contains user data as well
+      const { token, user } = response.data; 
       if (token && user) {
         onLogin!(token, user); // Pass token and user data to the login function
         showAlert('Success', response.data.message);
@@ -104,7 +104,7 @@ const styles = StyleSheet.create({
    },
   title: { fontSize: 24, fontWeight: 'bold' },
   input: {
-    width: '35%',
+    width: 300,
     height: 50,
     borderColor: '#808080',
     borderWidth: 1,
@@ -117,7 +117,7 @@ const styles = StyleSheet.create({
     paddingVertical: 14,
     paddingHorizontal: 30,
     borderRadius: 10,
-    width: '50%',
+    width: 350,
     alignItems: 'center',
   },
   MyLogo: {

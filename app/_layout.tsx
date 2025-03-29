@@ -1,7 +1,7 @@
 import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
 import { useColorScheme } from '@/hooks/useColorScheme';
 
-import { Stack, useRouter} from 'expo-router';
+import { Stack, useRouter, useSegments} from 'expo-router';
 import { AuthProvider, useAuth } from '../context/AuthContext';
 import { useEffect } from 'react';
 
@@ -10,21 +10,24 @@ import { useEffect } from 'react';
 const StackLayout = () => {
 	const { authState } = useAuth();
 	const router = useRouter();
-
+	const segments = useSegments();
+	
 	useEffect(() => {
-		if (!authState?.authenticated) {
+		const inAuthGroup = segments[0] === '(protected)';
+
+		if (!authState?.authenticated && inAuthGroup) {
 			console.log("not auth using replace /", authState?.authenticated)
 			router.replace('/');
 		} else if (authState?.authenticated === true) {
 			console.log("Auth using (tabs)/home) /", authState?.authenticated)
-			router.replace("/(tabs)/home");
+			router.replace("/(protected)");
 		}
 	}, [authState]);
 
 	return (
 		<Stack>
 			<Stack.Screen name="index" options={{ headerShown: false }} />
-			<Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+			<Stack.Screen name="(protected)" options={{ headerShown: false }} />
 		</Stack>
 	);
 };

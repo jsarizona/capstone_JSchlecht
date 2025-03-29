@@ -10,7 +10,7 @@ const DrawerLayout = () => {
 		<GestureHandlerRootView style={{ flex: 1 }}>
 			<Drawer>
 				<Drawer.Screen
-					name="admin"
+					name="index"
 					options={{
 						headerTitle: 'Home',
 						drawerLabel: 'Home',
