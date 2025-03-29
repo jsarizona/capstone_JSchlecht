@@ -20,6 +20,31 @@ const DrawerLayout = () => {
 					}}
 					redirect={authState?.authenticated === null}
 				/>
+
+				<Drawer.Screen
+					name="news"
+					options={{
+						headerTitle: 'Newsfeed',
+						drawerLabel: 'News',
+						drawerIcon: ({ size, color }) => (
+							<Ionicons name="newspaper-outline" size={size} color={color} />
+						)
+					}}
+					//All Authenticated Users
+					redirect={authState?.authenticated !== true}
+				/>
+				<Drawer.Screen
+					name="schedule"
+					options={{
+						headerTitle: 'ScheduleView',
+						drawerLabel: 'Schedule',
+						drawerIcon: ({ size, color }) => (
+							<Ionicons name="newspaper-outline" size={size} color={color} />
+						)
+					}}
+					//User Only
+					redirect={authState?.user?.role !== Role.USER}
+				/>
 				<Drawer.Screen
 					name="admin"
 					options={{
@@ -29,6 +54,7 @@ const DrawerLayout = () => {
 							<Ionicons name="cog-outline" size={size} color={color} />
 						)
 					}}
+					//Admin Only
 					redirect={authState?.user?.role !== Role.ADMIN}
 				/>
 			</Drawer>

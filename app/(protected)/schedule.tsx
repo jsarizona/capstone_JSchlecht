@@ -3,11 +3,11 @@ import { ThemedView } from '@/components/ThemedView';
 import { ThemedText } from '@/components/ThemedText';
 import { StyleSheet } from 'react-native';
 
-export default function NewsScreen() {
+export default function ScheduleScreen() {
   return (
     <ThemedView style={styles.container}>
       <ThemedText type="title" style={styles.title}>
-        THis is the News Section
+        THis is the Schedule Section
       </ThemedText>
       <ThemedText style={styles.subtitle}>
         Start exploring by navigating through the tabs below.
