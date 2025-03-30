@@ -87,6 +87,7 @@ export default function LoginScreen() {
         <RegisterModal visible={modalVisible} onClose={() => setModalVisible(false)} onRegister={handleRegister} />
 
       </ThemedView>
+      
       <CustomAlertModal 
         visible={alertVisible} 
         title={alertTitle} 

@@ -1,3 +1,4 @@
+import { CLOSE_BUTTON_STYLES } from '@/constants/Close_Buttons';
 import React from 'react';
 import { Modal, View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 
@@ -50,17 +51,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     marginBottom: 20,
   },
-  closeButton: {
-    backgroundColor: '#4A90E2',
-    paddingVertical: 12,
-    paddingHorizontal: 30,
-    borderRadius: 10,
-  },
-  closeButtonText: {
-    color: '#FFF',
-    fontSize: 18,
-    fontWeight: 'bold',
-  },
+  ...CLOSE_BUTTON_STYLES,
 });
 
 export default CustomAlertModal;
