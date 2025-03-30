@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Modal, View, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
 import { ThemedText } from '@/components/ThemedText';
+import { BUTTON_STYLES } from '@/constants/Buttons';
 
 interface RegisterModalProps {
   visible: boolean;
@@ -98,15 +99,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     marginBottom: 10,
   },
-  button: {
-    backgroundColor: '#4A90E2',
-    paddingVertical: 14,
-    paddingHorizontal: 30,
-    borderRadius: 10,
-    width: '100%',
-    alignItems: 'center',
-  },
-  buttonText: { color: '#FFF', fontSize: 18, fontWeight: 'bold' },
+  ...BUTTON_STYLES,
   closeButton: {
     backgroundColor: '#FF3B30',
     paddingVertical: 12,

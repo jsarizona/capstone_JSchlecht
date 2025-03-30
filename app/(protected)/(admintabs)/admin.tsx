@@ -3,6 +3,7 @@ import { ThemedView } from '@/components/ThemedView';
 import { ThemedText } from '@/components/ThemedText';
 import { StyleSheet } from 'react-native';
 
+
 export default function AdminScreen() {
   return (
     <ThemedView style={styles.container}>
@@ -14,6 +15,7 @@ export default function AdminScreen() {
       </ThemedText>
     </ThemedView>
   );
+  
 }
 
 const styles = StyleSheet.create({

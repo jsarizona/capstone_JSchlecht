@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { StyleSheet, TextInput, TouchableOpacity, Alert, Image, Platform } from 'react-native';
+import { StyleSheet, TextInput, TouchableOpacity, Image} from 'react-native';
 import axios from 'axios';
 import { ThemedText } from '@/components/ThemedText';
 import ParallaxScrollView from '@/components/ParallaxScrollView';
@@ -7,6 +7,7 @@ import { ThemedView } from '@/components/ThemedView';
 import { useAuth } from '../context/AuthContext';
 import RegisterModal from '@/modals/RegisterModal'; // Import the modal
 import CustomAlertModal from '@/modals/CustomAlertModal';
+import { BUTTON_STYLES } from '@/constants/Buttons';
 
 export default function LoginScreen() {
   const { onLogin } = useAuth();
@@ -96,8 +97,9 @@ export default function LoginScreen() {
   );
 }
 
+
 const styles = StyleSheet.create({
-  container: { paddingHorizontal: 100, alignItems: 'center', gap:10},
+  container: { paddingHorizontal: 100, alignItems: 'center', gap: 10 },
   headerImage: { alignSelf: 'center', marginTop: 40, height: 225, width: 430 },
   title: { fontSize: 24, fontWeight: 'bold' },
   input: {
@@ -109,14 +111,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 15,
     fontSize: 16,
   },
-  button: {
-    backgroundColor: '#4A90E2',
-    paddingVertical: 14,
-    borderRadius: 10,
-    width: 350,
-    alignItems: 'center',
-    marginVertical: 5,
-  },
-  buttonText: { color: '#FFF', fontSize: 18, fontWeight: 'bold' },
+  ...BUTTON_STYLES, 
 });
+
 

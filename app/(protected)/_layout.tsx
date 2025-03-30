@@ -46,7 +46,7 @@ const DrawerLayout = () => {
 					redirect={authState?.user?.role !== Role.USER}
 				/>
 				<Drawer.Screen
-					name="admin"
+					name="(admintabs)"
 					options={{
 						headerTitle: 'Admin Area',
 						drawerLabel: 'Admin',
