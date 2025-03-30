@@ -1,5 +1,7 @@
 import React, { createContext, useState, useContext, ReactNode, useEffect } from 'react';
+import { useNavigation } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { router } from 'expo-router';
 
 export enum Role {
   ADMIN = 'admin',
@@ -91,6 +93,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     } catch (error) {
       console.error('Logout error:', error);
     }
+    
   };
 
   const value = {

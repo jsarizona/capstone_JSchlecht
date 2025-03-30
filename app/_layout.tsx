@@ -18,7 +18,7 @@ const StackLayout = () => {
 
 		if (!authState?.authenticated && inAuthGroup) {
 			console.log("not auth using replace /", authState?.authenticated)
-			router.replace("/");
+			router.replace("/index");
 		} else if (authState?.authenticated === true) {
 			console.log("Auth using /(protected))", authState?.authenticated)
 			router.replace("/(protected)");
