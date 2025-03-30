@@ -1,37 +1,28 @@
-import { Tabs } from 'expo-router';
-import React, { useContext } from 'react';
-import { Platform } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
+import { Drawer } from 'expo-router/drawer';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import { Role, useAuth } from '../../context/AuthContext';
 
-import { HapticTab } from '@/components/HapticTab';
-import { IconSymbol } from '@/components/ui/IconSymbol';
-import TabBarBackground from '@/components/ui/TabBarBackground';
-import { Colors } from '@/constants/Colors';
-import { useColorScheme } from '@/hooks/useColorScheme';
+const DrawerLayout = () => {
+	const { authState } = useAuth();
 
+	return (
+		<GestureHandlerRootView style={{ flex: 1 }}>
+			<Drawer>
+				<Drawer.Screen
+					name="index"
+					options={{
+						headerTitle: 'Home',
+						drawerLabel: 'Home',
+						drawerIcon: ({ size, color }) => (
+							<Ionicons name="home-outline" size={size} color={color} />
+						)
+					}}
+					redirect={authState?.authenticated === null}
+				/>
+			</Drawer>
+		</GestureHandlerRootView>
+	);
+};
 
-export default function Layout() {
-  const colorScheme = useColorScheme();
-
-  return (
-    <Tabs
-      screenOptions={{
-        tabBarActiveTintColor: Colors[colorScheme ?? 'light'].tint,
-        headerShown: false,
-        tabBarButton: HapticTab,
-        tabBarBackground: TabBarBackground,
-        tabBarStyle: Platform.select({
-          ios: { position: 'absolute' },
-          default: {},
-        }),
-      }}>
-      <Tabs.Screen
-        name="profile"
-        options={{
-          title: 'Profile',
-          tabBarIcon: ({ color }) => <IconSymbol size={28} name="lock.fill" color={color} />,
-        }}
-      />
-      
-      </Tabs>
-  );
-}
+export default DrawerLayout;

@@ -13,13 +13,14 @@ const StackLayout = () => {
 	const segments = useSegments();
 	
 	useEffect(() => {
+
 		const inAuthGroup = segments[0] === '(protected)';
 
 		if (!authState?.authenticated && inAuthGroup) {
 			console.log("not auth using replace /", authState?.authenticated)
-			router.replace('/');
+			router.replace("/");
 		} else if (authState?.authenticated === true) {
-			console.log("Auth using (tabs)/home) /", authState?.authenticated)
+			console.log("Auth using /(protected))", authState?.authenticated)
 			router.replace("/(protected)");
 		}
 	}, [authState]);

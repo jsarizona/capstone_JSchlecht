@@ -1,5 +1,6 @@
 import { Button, StyleSheet, Text, View } from 'react-native';
-import { useAuth } from '../../context/AuthContext';
+import { Role, useAuth } from '../../context/AuthContext';
+import WithRole from '@/components/WithRole';
 
 const Page = () => {
 	const { authState, onLogout } = useAuth();
@@ -11,8 +12,11 @@ const Page = () => {
 	return (
 		<View style={styles.container}>
 			<Text style={styles.title}>Home</Text>
-			<Text style={styles.title}>Role: {authState?.user?.role}</Text>
-			<Button title="Logout" onPress={onLogoutPressed} />
+			<WithRole role={Role.ADMIN && Role.USER}>
+				<Text style={styles.title}>Role: {authState?.user?.role}</Text>
+				<Button title="Logout" onPress={onLogoutPressed} />
+			</WithRole>
+			
 			<View style={styles.separator} />
 		</View>
 	);
@@ -21,6 +25,10 @@ const Page = () => {
 export default Page;
 
 const styles = StyleSheet.create({
+	link: {
+		marginTop: 15,
+		paddingVertical: 15,
+	  },
 	container: {
 		alignItems: 'center',
 		flex: 1,

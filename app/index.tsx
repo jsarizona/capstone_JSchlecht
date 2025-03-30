@@ -6,20 +6,24 @@ import ParallaxScrollView from '@/components/ParallaxScrollView';
 import { ThemedView } from '@/components/ThemedView';
 import { useAuth } from '../context/AuthContext';
 import RegisterModal from '@/modals/RegisterModal'; // Import the modal
+import CustomAlertModal from '@/modals/CustomAlertModal';
 
 export default function LoginScreen() {
   const { onLogin } = useAuth();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [modalVisible, setModalVisible] = useState(false);
-
+  const [alertVisible, setAlertVisible] = useState(false);
+  const [alertTitle, setAlertTitle] = useState('');
+  const [alertMessage, setAlertMessage] = useState('');
+  
   const handleLogin = async () => {
     try {
       const response = await axios.post('http://192.168.6.181:5000/api/auth/login', { email, password });
       const { token, user } = response.data;
       if (token && user) {
-        onLogin!(token, user);
         showAlert('Success', response.data.message);
+        onLogin!(token, user);
       }
     } catch (error) {
       showAlert('Error', error.response?.data?.message || 'Something went wrong');
@@ -36,13 +40,12 @@ export default function LoginScreen() {
     }
   };
 
-  const showAlert = (title: string, message: string | undefined) => {
-    if (Platform.OS === 'web') {
-      window.alert(`${title}: ${message}`);
-    } else {
-      Alert.alert(title, message);
-    }
+  const showAlert = (title: string, message: string) => {
+    setAlertTitle(title);
+    setAlertMessage(message);
+    setAlertVisible(true);
   };
+  
 
   return (
     <ParallaxScrollView
@@ -83,6 +86,12 @@ export default function LoginScreen() {
         <RegisterModal visible={modalVisible} onClose={() => setModalVisible(false)} onRegister={handleRegister} />
 
       </ThemedView>
+      <CustomAlertModal 
+        visible={alertVisible} 
+        title={alertTitle} 
+        message={alertMessage} 
+        onClose={() => setAlertVisible(false)} 
+      />
     </ParallaxScrollView>
   );
 }
