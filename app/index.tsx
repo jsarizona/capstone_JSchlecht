@@ -8,6 +8,8 @@ import { useAuth } from '../context/AuthContext';
 import RegisterModal from '@/modals/RegisterModal'; // Import the modal
 import CustomAlertModal from '@/modals/CustomAlertModal';
 import { BUTTON_STYLES } from '@/constants/Buttons';
+import { HEADER_IMAGE_STYLES} from '@/constants/HeaderImage';
+import { INPUTS_STYLES } from '@/constants/Inputs';
 
 export default function LoginScreen() {
   const { onLogin } = useAuth();
@@ -52,7 +54,7 @@ export default function LoginScreen() {
     <ParallaxScrollView
       headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
       headerImage={
-        <Image source={require('@/assets/images/splash-icon.png')} style={styles.headerImage} />
+        <Image source={require('@/assets/images/splash-icon-no-background.png')} style={styles.headerImageStyle} />
       }>
       <ThemedView style={styles.container}>
         <ThemedText type="title" style={styles.title}>Welcome Back!</ThemedText>
@@ -101,18 +103,10 @@ export default function LoginScreen() {
 
 const styles = StyleSheet.create({
   container: { paddingHorizontal: 100, alignItems: 'center', gap: 10 },
-  headerImage: { alignSelf: 'center', marginTop: 40, height: 225, width: 430 },
   title: { fontSize: 24, fontWeight: 'bold' },
-  input: {
-    width: 300,
-    height: 50,
-    borderColor: '#808080',
-    borderWidth: 1,
-    borderRadius: 10,
-    paddingHorizontal: 15,
-    fontSize: 16,
-  },
-  ...BUTTON_STYLES, 
+  ...INPUTS_STYLES,
+  ...BUTTON_STYLES,
+  ...HEADER_IMAGE_STYLES
 });
 
 

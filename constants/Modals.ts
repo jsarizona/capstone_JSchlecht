@@ -1,4 +1,5 @@
 import { StyleSheet } from 'react-native';
+import { INPUTS_STYLES } from './Inputs';
 
 export const MODALS_STYLES = StyleSheet.create({
     modalContainer: {
@@ -14,14 +15,5 @@ export const MODALS_STYLES = StyleSheet.create({
         maxWidth: 400,
         alignItems: 'center',
       },
-      input: {
-        width: '100%',
-        height: 50,
-        borderColor: '#808080',
-        borderWidth: 1,
-        borderRadius: 10,
-        paddingHorizontal: 15,
-        marginVertical: 10,
-        backgroundColor: '#fff',
-      },
+      ...INPUTS_STYLES,
 });
