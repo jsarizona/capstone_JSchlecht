@@ -4,20 +4,24 @@ import { ThemedView } from '@/components/ThemedView';
 import { ThemedText } from '@/components/ThemedText';
 import axios from 'axios';
 import AdminUserAccountUpdateModal from '../../../modals/AdminUserAccountUpdateModal'; // Import the modal
-
+import { useAuth } from '@/context/AuthContext';
+import { BUTTON_STYLES } from '@/constants/Buttons';
 
 export default function AdminScreen() {
+  const { authState } = useAuth();
   const [users, setUsers] = useState([]);
-  
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [selectedUser, setSelectedUser] = useState(null); // Track the selected user for updates
 
   useEffect(() => {
     axios
       .post('http://192.168.6.181:5000/api/users/getusers')  // Fetch users
-      .then((response) => setUsers(response.data))
+      .then((response) => {
+        const filteredUsers = response.data.filter((user) => user.email !== authState?.user?.email); // Filter out the current user
+        setUsers(filteredUsers);
+      })
       .catch((error) => console.error(error));
-  }, []);
+  }, [authState?.user?.email]); // Re-run effect when authState changes
 
   // Open the modal and set the selected user
   const handleEdit = (user) => {
@@ -39,18 +43,18 @@ export default function AdminScreen() {
         data={users}
         keyExtractor={(item) => item._id}
         renderItem={({ item }) => (
-          <View style={styles.userItem}>
+          <ThemedView style={styles.userItem}>
             <Text style={styles.userName}>ID: {item._id}</Text>
             <Text style={styles.userName}>Name: {item.name}</Text>
             <Text style={styles.userEmail}>Email: {item.email}</Text>
             <Text style={styles.userRole}>Role: {item.role}</Text>
             {/* Add Edit Button */}
             <TouchableOpacity 
-              style={styles.editButton} 
+              style={[styles.button, { width: "auto"}]}
               onPress={() => handleEdit(item)}>
-              <ThemedText style={styles.editButtonText}>Edit</ThemedText>
+              <ThemedText style={styles.buttonText}>Edit</ThemedText>
             </TouchableOpacity>
-          </View>
+          </ThemedView>
         )}
         numColumns={2} // Display 2 items per row
         contentContainerStyle={styles.listContainer} // Add space between items
@@ -86,13 +90,8 @@ const styles = StyleSheet.create({
     color: '#555',
     marginBottom: 20,
   },
-  // Adjusted styles to make items fit two per row
-  listContainer: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    width: '100%',
+  listContainer: {  
     justifyContent: 'center', // Space items evenly
-    
   },
   userItem: {
     marginBottom: 15,
@@ -102,32 +101,5 @@ const styles = StyleSheet.create({
     width: '48%', // Each item takes up 48% of the width
     marginHorizontal: '1%', // To add some space between items
   },
-  userName: {
-    fontSize: 16,
-    fontWeight: 'bold',
-  },
-  userEmail: {
-    fontSize: 14,
-    color: '#666',
-  },
-  userRole: {
-    fontSize: 14,
-    color: '#666',
-  },
-  userDate: {
-    fontSize: 12,
-    color: '#999',
-    marginTop: 5,
-  },
-  editButton: {
-    backgroundColor: '#007BFF',
-    padding: 10,
-    borderRadius: 5,
-    marginTop: 10,
-    alignItems: 'center',
-  },
-  editButtonText: {
-    color: 'white',
-    fontWeight: 'bold',
-  },
+  ...BUTTON_STYLES
 });
