@@ -7,10 +7,16 @@ import { BUTTON_STYLES } from '@/constants/Buttons';
 import { CLOSE_BUTTON_STYLES } from '@/constants/Close_Buttons';
 import { MODALS_STYLES } from '@/constants/Modals';
 
+interface User {
+  name: string;
+  email: string;
+  role: string;
+}
+
 interface Props {
   visible: boolean;
   onClose: () => void;
-  user: any; // Added user prop
+  user: User | null;
 }
 
 const AdminUserAccountUpdateModal: React.FC<Props> = ({ visible, onClose, user }) => {
@@ -19,7 +25,7 @@ const AdminUserAccountUpdateModal: React.FC<Props> = ({ visible, onClose, user }
   const [role, setRole] = useState(user?.role || '');
   const [newPassword, setNewPassword] = useState('');
 
-  // Update fields if user changes
+  // Reset form if user changes
   useEffect(() => {
     if (user) {
       setName(user.name);
@@ -48,8 +54,15 @@ const AdminUserAccountUpdateModal: React.FC<Props> = ({ visible, onClose, user }
     }
   };
 
+  const handleClose = () => {
+    setName('');
+    setRole('');
+    setNewPassword('');
+    onClose();
+  };
+
   return (
-    <Modal animationType="slide" transparent={true} visible={visible} onRequestClose={onClose}>
+    <Modal animationType="slide" transparent={true} visible={visible} onRequestClose={handleClose}>
       <ThemedView style={styles.modalContainer}>
         <ThemedView style={styles.modalContent}>
           <ThemedText type="title">Update Account</ThemedText>
@@ -60,7 +73,7 @@ const AdminUserAccountUpdateModal: React.FC<Props> = ({ visible, onClose, user }
           <TouchableOpacity style={styles.button} onPress={handleUpdate}>
             <ThemedText style={styles.buttonText}>Save Changes</ThemedText>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.closeButton} onPress={onClose}>
+          <TouchableOpacity style={styles.closeButton} onPress={handleClose}>
             <ThemedText style={styles.closeButtonText}>Cancel</ThemedText>
           </TouchableOpacity>
         </ThemedView>

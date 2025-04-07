@@ -23,7 +23,6 @@ const Page = () => {
       <ThemedView style={styles.container}>
         <ThemedText type="title">Welcome Back!</ThemedText>
         <ThemedText type="subtitle">Username: {authState?.user?.email}</ThemedText>
-        <ThemedText type="subtitle">Employee ID: {authState?.user?.id}</ThemedText>
         <ThemedText type="subtitle">Name: {authState?.user?.name}</ThemedText>
         <ThemedText type="subtitle">Role: {authState?.user?.role}</ThemedText>
 

@@ -3,10 +3,12 @@ import { View, Text, FlatList, TouchableOpacity, StyleSheet } from 'react-native
 import { ThemedView } from '@/components/ThemedView';
 import { ThemedText } from '@/components/ThemedText';
 import axios from 'axios';
-import UserAccountUpdateModal from '../../../modals/AdminUserAccountUpdateModal'; // Import the modal
+import AdminUserAccountUpdateModal from '../../../modals/AdminUserAccountUpdateModal'; // Import the modal
+
 
 export default function AdminScreen() {
   const [users, setUsers] = useState([]);
+  
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [selectedUser, setSelectedUser] = useState(null); // Track the selected user for updates
 
@@ -29,9 +31,10 @@ export default function AdminScreen() {
         Admin Section
       </ThemedText>
       <ThemedText style={styles.subtitle}>
-        Start exploring by navigating through the tabs below.
+        Manage the Users Below
       </ThemedText>
       
+      {/* Adjust FlatList to display two boxes per row */}
       <FlatList
         data={users}
         keyExtractor={(item) => item._id}
@@ -41,8 +44,6 @@ export default function AdminScreen() {
             <Text style={styles.userName}>Name: {item.name}</Text>
             <Text style={styles.userEmail}>Email: {item.email}</Text>
             <Text style={styles.userRole}>Role: {item.role}</Text>
-            
-
             {/* Add Edit Button */}
             <TouchableOpacity 
               style={styles.editButton} 
@@ -51,11 +52,13 @@ export default function AdminScreen() {
             </TouchableOpacity>
           </View>
         )}
+        numColumns={2} // Display 2 items per row
+        contentContainerStyle={styles.listContainer} // Add space between items
       />
       
       {/* User Account Update Modal */}
       {selectedUser && (
-        <UserAccountUpdateModal 
+        <AdminUserAccountUpdateModal 
           visible={isModalVisible} 
           onClose={() => setIsModalVisible(false)} 
           user={selectedUser} // Pass the selected user to the modal
@@ -83,12 +86,21 @@ const styles = StyleSheet.create({
     color: '#555',
     marginBottom: 20,
   },
+  // Adjusted styles to make items fit two per row
+  listContainer: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    width: '100%',
+    justifyContent: 'center', // Space items evenly
+    
+  },
   userItem: {
     marginBottom: 15,
     padding: 10,
     backgroundColor: '#f5f5f5',
     borderRadius: 8,
-    width: '100%',
+    width: '48%', // Each item takes up 48% of the width
+    marginHorizontal: '1%', // To add some space between items
   },
   userName: {
     fontSize: 16,
