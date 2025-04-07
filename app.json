@@ -1,7 +1,7 @@
 {
   "expo": {
     "name": "MicroManagePro",
-    "slug": "MicroManagePro",
+    "slug": "micromanagepro",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/Logo-no-background.png",
@@ -36,6 +36,15 @@
     ],
     "experiments": {
       "typedRoutes": true
-    }
+    },
+    "extra": {
+      "router": {
+        "origin": false
+      },
+      "eas": {
+        "projectId": "35baadc0-c839-431b-92a7-93a568f4255d"
+      }
+    },
+    "owner": "jschlecht"
   }
 }

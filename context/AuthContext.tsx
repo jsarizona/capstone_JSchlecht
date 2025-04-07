@@ -19,6 +19,7 @@ interface AuthProps {
   authState: { authenticated: boolean | null; user: userData | null; token: string | null };
   onLogin: (token: string, userData: userData) => void;
   onLogout: () => void;
+  onUpdate: (updatedUser: userData) => void;
 }
 
 const AuthContext = createContext<Partial<AuthProps>>({});
@@ -95,10 +96,26 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }
     
   };
-
+  
+  const updateUser = async (updatedUser: userData) => {
+    try {
+      const newState = {
+        ...authState,
+        user: updatedUser
+      };
+  
+      await AsyncStorage.setItem('authState', JSON.stringify(newState));
+      setAuthState(newState);
+  
+      console.log("User info updated:", updatedUser);
+    } catch (error) {
+      console.error("Failed to update user in context:", error);
+    }
+  };
   const value = {
     onLogin: login,
     onLogout: logout,
+    onUpdate: updateUser,
     authState
   };
 

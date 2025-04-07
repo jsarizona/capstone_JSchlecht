@@ -1,17 +1,31 @@
-import { useState } from 'react';
-import { StyleSheet, TextInput, TouchableOpacity, Image} from 'react-native';
+import { useState, useEffect } from 'react';
+import { StyleSheet, TextInput, TouchableOpacity, Image } from 'react-native';
 import axios from 'axios';
 import { ThemedText } from '@/components/ThemedText';
 import ParallaxScrollView from '@/components/ParallaxScrollView';
 import { ThemedView } from '@/components/ThemedView';
 import { useAuth } from '../context/AuthContext';
-import RegisterModal from '@/modals/RegisterModal'; // Import the modal
+import RegisterModal from '@/modals/RegisterModal';
 import CustomAlertModal from '@/modals/CustomAlertModal';
 import { BUTTON_STYLES } from '@/constants/Buttons';
-import { HEADER_IMAGE_STYLES} from '@/constants/HeaderImage';
+import { HEADER_IMAGE_STYLES } from '@/constants/HeaderImage';
 import { INPUTS_STYLES } from '@/constants/Inputs';
 
+import * as WebBrowser from 'expo-web-browser';
+import * as Google from 'expo-auth-session/providers/google';
+import * as AuthSession from 'expo-auth-session';
+
 export default function LoginScreen() {
+  WebBrowser.maybeCompleteAuthSession();
+
+  
+  const [request, response, promptAsync] = Google.useAuthRequest({
+    webClientId: '522198646666-nmgbgh4tcl7p98ttlo2pe1f0ufluuhto.apps.googleusercontent.com',
+    androidClientId: 'YOUR_ANDROID_CLIENT_ID.apps.googleusercontent.com',
+    iosClientId: 'YOUR_IOS_CLIENT_ID.apps.googleusercontent.com',
+  });
+
+  
   const { onLogin } = useAuth();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -19,6 +33,8 @@ export default function LoginScreen() {
   const [alertVisible, setAlertVisible] = useState(false);
   const [alertTitle, setAlertTitle] = useState('');
   const [alertMessage, setAlertMessage] = useState('');
+
+
   
   const handleLogin = async () => {
     try {
@@ -48,7 +64,31 @@ export default function LoginScreen() {
     setAlertMessage(message);
     setAlertVisible(true);
   };
+  //notworking
+  useEffect(() => {
+    const loginWithGoogle = async () => {
+      if (response?.type === 'success' && response?.authentication?.idToken) {
+        const idToken = response.authentication.idToken;
   
+        try {
+          const backendResponse = await axios.post('http://192.168.6.181:5000/api/auth/google-login', {
+            token: idToken,
+          });
+  
+          const { token, user } = backendResponse.data;
+          showAlert('Success', 'Logged in with Google');
+          onLogin!(token, user);
+        } catch (err) {
+          console.error('Google login error:', err);
+          showAlert('Error', err.response?.data?.message || 'Google login failed');
+        }
+      } else if (response?.type === 'error') {
+        showAlert('Error', 'Google login failed');
+      }
+    };
+
+    loginWithGoogle();
+  }, [response]);
 
   return (
     <ParallaxScrollView
@@ -88,6 +128,12 @@ export default function LoginScreen() {
         {/* Register Modal */}
         <RegisterModal visible={modalVisible} onClose={() => setModalVisible(false)} onRegister={handleRegister} />
 
+        <TouchableOpacity
+          style={styles.button}
+          onPress={() => promptAsync()}
+          disabled={!request}>
+          <ThemedText style={styles.buttonText}>Login with Google</ThemedText>
+        </TouchableOpacity>
       </ThemedView>
       
       <CustomAlertModal 
@@ -96,10 +142,10 @@ export default function LoginScreen() {
         message={alertMessage} 
         onClose={() => setAlertVisible(false)} 
       />
+
     </ParallaxScrollView>
   );
 }
-
 
 const styles = StyleSheet.create({
   container: { paddingHorizontal: 100, alignItems: 'center', gap: 10 },
@@ -108,5 +154,3 @@ const styles = StyleSheet.create({
   ...BUTTON_STYLES,
   ...HEADER_IMAGE_STYLES
 });
-
-

@@ -13,7 +13,7 @@ interface Props {
 }
 
 const UserAccountUpdateModal: React.FC<Props> = ({ visible, onClose }) => {
-  const { authState } = useAuth(); //updateUser 
+  const { authState, onUpdate } = useAuth();
   const [name, setName] = useState(authState?.user?.name || '');
   const [role, setRole] = useState(authState?.user?.role || '');
   const [newPassword, setNewPassword] = useState('');
@@ -30,7 +30,8 @@ const UserAccountUpdateModal: React.FC<Props> = ({ visible, onClose }) => {
 
       const data = await response.json();
       if (response.ok) {
-        //updateUser(data.user); // Update auth context
+        onUpdate?.(data.user); // Update auth context
+        console.log("Success")
         onClose();
       } else {
         console.error(data.message);
