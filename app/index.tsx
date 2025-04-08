@@ -17,14 +17,18 @@ import * as AuthSession from 'expo-auth-session';
 
 export default function LoginScreen() {
   WebBrowser.maybeCompleteAuthSession();
-
+  const redirectUri = AuthSession.makeRedirectUri();
   
   const [request, response, promptAsync] = Google.useAuthRequest({
     webClientId: '522198646666-nmgbgh4tcl7p98ttlo2pe1f0ufluuhto.apps.googleusercontent.com',
     androidClientId: 'YOUR_ANDROID_CLIENT_ID.apps.googleusercontent.com',
     iosClientId: 'YOUR_IOS_CLIENT_ID.apps.googleusercontent.com',
+  
+    redirectUri,
+    responseType: 'id_token',
+    scopes: ['openid', 'profile', 'email'], // super important
   });
-
+  console.log(redirectUri)
   
   const { onLogin } = useAuth();
   const [email, setEmail] = useState('');
@@ -66,10 +70,13 @@ export default function LoginScreen() {
   };
   //notworking
   useEffect(() => {
-    const loginWithGoogle = async () => {
-      if (response?.type === 'success' && response?.authentication?.idToken) {
-        const idToken = response.authentication.idToken;
-  
+    console.log("response")
+    console.log(response)
+    if (response?.type === 'success' && response?.params.id_token) {
+      
+      const loginWithGoogle = async () => {
+        const idToken = response?.params.id_token;
+        
         try {
           const backendResponse = await axios.post('http://192.168.6.181:5000/api/auth/google-login', {
             token: idToken,
@@ -77,18 +84,21 @@ export default function LoginScreen() {
   
           const { token, user } = backendResponse.data;
           showAlert('Success', 'Logged in with Google');
+          console.log('Calling onLogin with:', token, user);
           onLogin!(token, user);
         } catch (err) {
           console.error('Google login error:', err);
           showAlert('Error', err.response?.data?.message || 'Google login failed');
         }
-      } else if (response?.type === 'error') {
-        showAlert('Error', 'Google login failed');
-      }
-    };
-
-    loginWithGoogle();
+      };
+  
+      loginWithGoogle();
+    } else if (response?.type === 'error') {
+      console.log("Failed")
+      showAlert('Error', 'Google login failed');
+    }
   }, [response]);
+  
 
   return (
     <ParallaxScrollView
