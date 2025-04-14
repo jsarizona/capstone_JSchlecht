@@ -6,14 +6,17 @@ import ParallaxScrollView from '@/components/ParallaxScrollView';
 import { ThemedView } from '@/components/ThemedView';
 import { useAuth } from '../context/AuthContext';
 import RegisterModal from '@/modals/RegisterModal';
+import PinModal from '@/modals/PinModal';
 import CustomAlertModal from '@/modals/CustomAlertModal';
 import { BUTTON_STYLES } from '@/constants/Buttons';
 import { HEADER_IMAGE_STYLES } from '@/constants/HeaderImage';
 import { INPUTS_STYLES } from '@/constants/Inputs';
-
+//import { GoogleSigninButton} from '@react-native-google-signin/google-signin';
 import * as WebBrowser from 'expo-web-browser';
 import * as Google from 'expo-auth-session/providers/google';
 import * as AuthSession from 'expo-auth-session';
+import CustomServer from '@/constants/CustomServer'
+
 
 export default function LoginScreen() {
   WebBrowser.maybeCompleteAuthSession();
@@ -37,16 +40,20 @@ export default function LoginScreen() {
   const [alertVisible, setAlertVisible] = useState(false);
   const [alertTitle, setAlertTitle] = useState('');
   const [alertMessage, setAlertMessage] = useState('');
-
+  const [pinModalVisible, setPinModalVisible] = useState(false);
+  const [pendingLoginData, setPendingLoginData] = useState<{ token: string, user: any } | null>(null);
+  
 
   
   const handleLogin = async () => {
     try {
-      const response = await axios.post('http://192.168.6.181:5000/api/auth/login', { email, password });
+      const response = await CustomServer.post('/api/auth/login', { email, password });
       const { token, user } = response.data;
       if (token && user) {
+        console.log("showing pin", token, user)
+        setPendingLoginData({ token, user });
+        setPinModalVisible(true);
         showAlert('Success', response.data.message);
-        onLogin!(token, user);
       }
     } catch (error) {
       showAlert('Error', error.response?.data?.message || 'Something went wrong');
@@ -55,7 +62,7 @@ export default function LoginScreen() {
 
   const handleRegister = async (registerEmail: string, registerPassword: string) => {
     try {
-      const response = await axios.post('http://192.168.6.181:5000/api/auth/register', { email: registerEmail, password: registerPassword });
+      const response = await CustomServer.post('/api/auth/register', { email: registerEmail, password: registerPassword });
       showAlert('Success', response.data.message);
       setModalVisible(false); // Close modal on success
     } catch (error) {
@@ -68,7 +75,7 @@ export default function LoginScreen() {
     setAlertMessage(message);
     setAlertVisible(true);
   };
-  //notworking
+  
   useEffect(() => {
     console.log("response")
     console.log(response)
@@ -78,14 +85,16 @@ export default function LoginScreen() {
         const idToken = response?.params.id_token;
         
         try {
-          const backendResponse = await axios.post('http://192.168.6.181:5000/api/auth/google-login', {
+          const backendResponse = await CustomServer.post('/api/auth/google-login', {
             token: idToken,
           });
   
           const { token, user } = backendResponse.data;
-          showAlert('Success', 'Logged in with Google');
+          
           console.log('Calling onLogin with:', token, user);
-          onLogin!(token, user);
+          setPendingLoginData({ token, user });
+          setPinModalVisible(true);
+          //showAlert('Success', 'Logged in with Google');
         } catch (err) {
           console.error('Google login error:', err);
           showAlert('Error', err.response?.data?.message || 'Google login failed');
@@ -99,6 +108,18 @@ export default function LoginScreen() {
     }
   }, [response]);
   
+  const handleVerifyPin = (pin: string) => {
+    // You can add more checks or send PIN to backend here
+    if (pin.length === 4 && pendingLoginData) {
+      onLogin!(pendingLoginData.token, pendingLoginData.user);
+      setPendingLoginData(null);
+      setPinModalVisible(false);
+    } else {
+      showAlert('Error', 'Invalid PIN or no login data');
+    }
+  };
+
+
 
   return (
     <ParallaxScrollView
@@ -138,6 +159,7 @@ export default function LoginScreen() {
         {/* Register Modal */}
         <RegisterModal visible={modalVisible} onClose={() => setModalVisible(false)} onRegister={handleRegister} />
 
+        
         <TouchableOpacity
           style={styles.button}
           onPress={() => promptAsync()}
@@ -151,6 +173,11 @@ export default function LoginScreen() {
         title={alertTitle} 
         message={alertMessage} 
         onClose={() => setAlertVisible(false)} 
+      />
+      <PinModal
+      visible={pinModalVisible}
+      onClose={() => setPinModalVisible(false)}
+      onVerify={handleVerifyPin}
       />
 
     </ParallaxScrollView>

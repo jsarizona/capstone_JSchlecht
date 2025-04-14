@@ -2,11 +2,10 @@ import React, { useEffect, useState } from 'react';
 import { View, Text, FlatList, TouchableOpacity, StyleSheet } from 'react-native';
 import { ThemedView } from '@/components/ThemedView';
 import { ThemedText } from '@/components/ThemedText';
-import axios from 'axios';
 import AdminUserAccountUpdateModal from '../../../modals/AdminUserAccountUpdateModal'; // Import the modal
 import { useAuth } from '@/context/AuthContext';
 import { BUTTON_STYLES } from '@/constants/Buttons';
-
+import CustomServer from '@/constants/CustomServer'
 export default function AdminScreen() {
   const { authState } = useAuth();
   const [users, setUsers] = useState([]);
@@ -14,8 +13,8 @@ export default function AdminScreen() {
   const [selectedUser, setSelectedUser] = useState(null); // Track the selected user for updates
 
   useEffect(() => {
-    axios
-      .post('http://192.168.6.181:5000/api/users/getusers')  // Fetch users
+    CustomServer
+      .post('/api/users/getusers')  // Fetch users
       .then((response) => {
         const filteredUsers = response.data.filter((user) => user.email !== authState?.user?.email); // Filter out the current user
         setUsers(filteredUsers);
