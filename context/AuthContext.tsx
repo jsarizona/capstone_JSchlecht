@@ -1,7 +1,6 @@
 import React, { createContext, useState, useContext, ReactNode, useEffect } from 'react';
-import { useNavigation } from '@react-navigation/native';
+
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { router } from 'expo-router';
 
 export enum Role {
   ADMIN = 'admin',
@@ -16,10 +15,11 @@ interface userData {
 }
 
 interface AuthProps {
-  authState: { authenticated: boolean | null; user: userData | null; token: string | null };
-  onLogin: (token: string, userData: userData) => void;
+  authState: { authenticated: boolean | null; user: userData | null; token: string | null; pinVerified: string | null };
+  onLogin: (token: string, userData: userData, pin?: string) => void;
   onLogout: () => void;
   onUpdate: (updatedUser: userData) => void;
+  onVerify: () => void;
 }
 
 const AuthContext = createContext<Partial<AuthProps>>({});
@@ -29,24 +29,31 @@ export const useAuth = () => {
 };
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
-  const [authState, setAuthState] = useState<{ authenticated: boolean | null; user: userData | null; token: string | null }>({
-    authenticated: null,
+  const [authState, setAuthState] = useState<{
+    authenticated: boolean | null;
+    user: userData | null;
+    token: string | null;
+    pinVerified:  boolean | null;
+  }>({
+    authenticated: false,
     user: null,
-    token: null
+    token: null,
+    pinVerified: false,
   });
 
   // Load auth state on app start
   useEffect(() => {
-    
     const loadAuthState = async () => {
       try {
         const storedAuthToken = await AsyncStorage.getItem('authToken');
         const storedAuthState = await AsyncStorage.getItem('authState');
-        if (storedAuthState && storedAuthToken) {
+        const storedAuthPin = await AsyncStorage.getItem('authPin')
+        if (storedAuthState && storedAuthToken && storedAuthPin) {
           console.log("found storedAuthState and Token", storedAuthState)
           setAuthState({
             ...JSON.parse(storedAuthState),
             token: storedAuthToken,
+            pinVerified: false,
           });
         }
       } catch (error) {
@@ -58,20 +65,21 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   }, []);
 
   // Login function
-  const login = async (token: string, userData: userData) => {
+  const login = async (token: string, userData: userData, pin?: string) => {
     try {
       const newState = {
         authenticated: true,
         user: userData,
-        token
+        token,
+        pinVerified: true
       };
-
+  
       await AsyncStorage.setItem('authToken', token);
       await AsyncStorage.setItem('authState', JSON.stringify(newState));
-
+      await AsyncStorage.setItem('authPin', pin!)
       setAuthState(newState);
-
-      console.log("User logged in:", userData);
+  
+      console.log("User logged in:", userData, "PIN:", pin);
     } catch (error) {
       console.error('Login error:', error);
     }
@@ -86,7 +94,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       setAuthState({
         authenticated: false,
         user: null,
-        token: null
+        token: null,
+        pinVerified: false
       });
 
       console.log('User logged out');
@@ -112,6 +121,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       console.error("Failed to update user in context:", error);
     }
   };
+
   const value = {
     onLogin: login,
     onLogout: logout,

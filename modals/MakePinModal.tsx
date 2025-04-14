@@ -14,9 +14,13 @@ interface PinModalProps {
 
 const PinModal: React.FC<PinModalProps> = ({ visible, onClose, onVerify }) => {
   const [pin, setPin] = useState('');
-
+  const [pinVerify, setPinVerify] = useState('');
   const handleVerify = () => {
     if (pin.length !== 4) {
+      alert('PIN must be 4 digits');
+      return;
+    }
+    if (pin !== pinVerify) {
       alert('PIN must be 4 digits');
       return;
     }
@@ -39,6 +43,16 @@ const PinModal: React.FC<PinModalProps> = ({ visible, onClose, onVerify }) => {
             secureTextEntry
             value={pin}
             onChangeText={setPin}
+            maxLength={4}
+          />
+          <TextInput
+            style={styles.input}
+            placeholder="Verify 4-digit PIN"
+            placeholderTextColor="#808080"
+            keyboardType="numeric"
+            secureTextEntry
+            value={pinVerify}
+            onChangeText={setPinVerify}
             maxLength={4}
           />
 

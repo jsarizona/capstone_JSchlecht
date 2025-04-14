@@ -20,7 +20,6 @@ const DrawerLayout = () => {
 					}}
 					redirect={authState?.authenticated === null}
 				/>
-
 				<Drawer.Screen
 					name="news"
 					options={{

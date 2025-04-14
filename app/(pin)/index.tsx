@@ -1,21 +1,33 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { StyleSheet, Image, TouchableOpacity } from 'react-native';
 import { useAuth } from '../../context/AuthContext';
 import { BUTTON_STYLES } from '@/constants/Buttons';
 import ParallaxScrollView from '@/components/ParallaxScrollView';
 import { ThemedView } from '@/components/ThemedView';
 import { ThemedText } from '@/components/ThemedText';
-import UserAccountUpdateModal from '../../modals/UserAccountUpdateModal';
 import { HEADER_IMAGE_STYLES } from '@/constants/HeaderImage';
+import PinModal from '@/modals/VerifyPinModal';
 import { router } from 'expo-router';
 
 const Page = () => {
   const { authState, onLogout } = useAuth();
-  const [modalVisible, setModalVisible] = useState(false);
+  const [pinModalVisible, setPinModalVisible] = useState(true);
 
   const onLogoutPressed = () => {
     onLogout!();
-    
+    router.replace('/index');
+  };
+  
+  const handleVerifyPin = (pin: string) => {
+    // You can add more checks or send PIN to backend here
+    console.log("Reaching Pin")
+    if (pin.length === 4 ) {
+      setPinModalVisible(false);
+      
+      router.replace('/(protected)')
+    } else {
+      
+    }
   };
 
   return (
@@ -23,22 +35,22 @@ const Page = () => {
       headerImage={<Image source={require('@/assets/images/Logo-no-background.png')} style={styles.headerImageStyle} />}
     >
       <ThemedView style={styles.container}>
-        <ThemedText type="title">Welcome Back!</ThemedText>
-        <ThemedText type="subtitle">Username: {authState?.user?.email}</ThemedText>
+        <ThemedText type="title">Welcome Back! </ThemedText>
+        <ThemedText type="title">Please Verify Pin or Logout</ThemedText>
+        
         <ThemedText type="subtitle">Name: {authState?.user?.name}</ThemedText>
-        <ThemedText type="subtitle">Role: {authState?.user?.role}</ThemedText>
 
         <TouchableOpacity style={styles.button} onPress={onLogoutPressed}>
           <ThemedText style={styles.buttonText}>Logout</ThemedText>
         </TouchableOpacity>
-
-        <TouchableOpacity style={styles.button} onPress={() => setModalVisible(true)}>
-          <ThemedText style={styles.buttonText}>Update Account Info</ThemedText>
-        </TouchableOpacity>
-
-        <UserAccountUpdateModal visible={modalVisible} onClose={() => setModalVisible(false)} />
       </ThemedView>
+      <PinModal
+      visible={pinModalVisible}
+      onClose={() => setPinModalVisible(false)}
+      onVerify={handleVerifyPin}
+      />
     </ParallaxScrollView>
+  
   );
 };
 

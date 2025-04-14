@@ -6,7 +6,7 @@ import ParallaxScrollView from '@/components/ParallaxScrollView';
 import { ThemedView } from '@/components/ThemedView';
 import { useAuth } from '../context/AuthContext';
 import RegisterModal from '@/modals/RegisterModal';
-import PinModal from '@/modals/PinModal';
+import PinModal from '@/modals/MakePinModal';
 import CustomAlertModal from '@/modals/CustomAlertModal';
 import { BUTTON_STYLES } from '@/constants/Buttons';
 import { HEADER_IMAGE_STYLES } from '@/constants/HeaderImage';
@@ -41,7 +41,7 @@ export default function LoginScreen() {
   const [alertTitle, setAlertTitle] = useState('');
   const [alertMessage, setAlertMessage] = useState('');
   const [pinModalVisible, setPinModalVisible] = useState(false);
-  const [pendingLoginData, setPendingLoginData] = useState<{ token: string, user: any } | null>(null);
+  const [pendingLoginData, setPendingLoginData] = useState<{ token: string, user: any} | null>(null);
   
 
   
@@ -94,7 +94,7 @@ export default function LoginScreen() {
           console.log('Calling onLogin with:', token, user);
           setPendingLoginData({ token, user });
           setPinModalVisible(true);
-          //showAlert('Success', 'Logged in with Google');
+          showAlert('Success', 'Logged in with Google');
         } catch (err) {
           console.error('Google login error:', err);
           showAlert('Error', err.response?.data?.message || 'Google login failed');
@@ -110,8 +110,9 @@ export default function LoginScreen() {
   
   const handleVerifyPin = (pin: string) => {
     // You can add more checks or send PIN to backend here
+    console.log("Reaching Pin")
     if (pin.length === 4 && pendingLoginData) {
-      onLogin!(pendingLoginData.token, pendingLoginData.user);
+      onLogin!(pendingLoginData.token, pendingLoginData.user, pin);
       setPendingLoginData(null);
       setPinModalVisible(false);
     } else {
