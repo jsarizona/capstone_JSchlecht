@@ -21,7 +21,7 @@ const PinModal: React.FC<PinModalProps> = ({ visible, onClose, onVerify }) => {
       return;
     }
     if (pin !== pinVerify) {
-      alert('PIN must be 4 digits');
+      alert('Pin does not match');
       return;
     }
     onVerify(pin);
