@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Modal, View, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
+import { Modal, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
 import { ThemedText } from '@/components/ThemedText';
 import { BUTTON_STYLES } from '@/constants/Buttons';
 import { CLOSE_BUTTON_STYLES } from '@/constants/Close_Buttons';

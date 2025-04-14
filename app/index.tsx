@@ -1,13 +1,9 @@
 import { useState, useEffect } from 'react';
 import { StyleSheet, TextInput, TouchableOpacity, Image } from 'react-native';
-import axios from 'axios';
 import { ThemedText } from '@/components/ThemedText';
 import ParallaxScrollView from '@/components/ParallaxScrollView';
 import { ThemedView } from '@/components/ThemedView';
-import { useAuth } from '../context/AuthContext';
-import RegisterModal from '@/modals/RegisterModal';
-import PinModal from '@/modals/MakePinModal';
-import CustomAlertModal from '@/modals/CustomAlertModal';
+
 import { BUTTON_STYLES } from '@/constants/Buttons';
 import { HEADER_IMAGE_STYLES } from '@/constants/HeaderImage';
 import { INPUTS_STYLES } from '@/constants/Inputs';
@@ -16,12 +12,17 @@ import * as WebBrowser from 'expo-web-browser';
 import * as Google from 'expo-auth-session/providers/google';
 import * as AuthSession from 'expo-auth-session';
 import CustomServer from '@/constants/CustomServer'
-
+import { useAuth } from '../context/AuthContext';
+import RegisterModal from '@/modals/RegisterModal';
+import PinModal from '@/modals/MakePinModal';
+import {useCustomAlert } from '@/modals/CustomAlertModal';
 
 export default function LoginScreen() {
+  
   WebBrowser.maybeCompleteAuthSession();
   const redirectUri = AuthSession.makeRedirectUri();
-  
+  const { showAlert } = useCustomAlert();
+
   const [request, response, promptAsync] = Google.useAuthRequest({
     webClientId: '522198646666-nmgbgh4tcl7p98ttlo2pe1f0ufluuhto.apps.googleusercontent.com',
     androidClientId: 'YOUR_ANDROID_CLIENT_ID.apps.googleusercontent.com',
@@ -37,15 +38,11 @@ export default function LoginScreen() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [modalVisible, setModalVisible] = useState(false);
-  const [alertVisible, setAlertVisible] = useState(false);
-  const [alertTitle, setAlertTitle] = useState('');
-  const [alertMessage, setAlertMessage] = useState('');
   const [pinModalVisible, setPinModalVisible] = useState(false);
   const [pendingLoginData, setPendingLoginData] = useState<{ token: string, user: any} | null>(null);
   
-
-  
   const handleLogin = async () => {
+    
     try {
       const response = await CustomServer.post('/api/auth/login', { email, password });
       const { token, user } = response.data;
@@ -68,12 +65,6 @@ export default function LoginScreen() {
     } catch (error) {
       showAlert('Error', error.response?.data?.message || 'Something went wrong');
     }
-  };
-
-  const showAlert = (title: string, message: string) => {
-    setAlertTitle(title);
-    setAlertMessage(message);
-    setAlertVisible(true);
   };
   
   useEffect(() => {
@@ -123,6 +114,7 @@ export default function LoginScreen() {
 
 
   return (
+    
     <ParallaxScrollView
       headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
       headerImage={
@@ -156,31 +148,25 @@ export default function LoginScreen() {
         <TouchableOpacity style={styles.button} onPress={() => setModalVisible(true)}>
           <ThemedText style={styles.buttonText}>Register</ThemedText>
         </TouchableOpacity>
-
-        {/* Register Modal */}
-        <RegisterModal visible={modalVisible} onClose={() => setModalVisible(false)} onRegister={handleRegister} />
-
-        
         <TouchableOpacity
           style={styles.button}
           onPress={() => promptAsync()}
           disabled={!request}>
           <ThemedText style={styles.buttonText}>Login with Google</ThemedText>
         </TouchableOpacity>
-      </ThemedView>
-      
-      <CustomAlertModal 
-        visible={alertVisible} 
-        title={alertTitle} 
-        message={alertMessage} 
-        onClose={() => setAlertVisible(false)} 
-      />
-      <PinModal
-      visible={pinModalVisible}
-      onClose={() => setPinModalVisible(false)}
-      onVerify={handleVerifyPin}
-      />
 
+        <RegisterModal 
+          visible={modalVisible} 
+          onClose={() => setModalVisible(false)} 
+          onRegister={handleRegister}
+          />
+        <PinModal
+          visible={pinModalVisible}
+          onClose={() => setPinModalVisible(false)}
+          onVerify={handleVerifyPin}
+        />
+    
+      </ThemedView>
     </ParallaxScrollView>
   );
 }

@@ -1,57 +1,57 @@
-import { CLOSE_BUTTON_STYLES } from '@/constants/Close_Buttons';
-import React from 'react';
+import React, { useState, createContext, useContext, ReactNode } from 'react';
 import { Modal, View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { CLOSE_BUTTON_STYLES } from '@/constants/Close_Buttons';
+import { MODALS_STYLES } from '@/constants/Modals';
+import { ThemedView } from '@/components/ThemedView';
+import { ThemedText } from '@/components/ThemedText';
 
-interface CustomAlertModalProps {
-  visible: boolean;
-  title: string;
-  message: string;
-  onClose: () => void;
+interface AlertContextType {
+  showAlert: (title: string, message: string) => void;
 }
 
-const CustomAlertModal: React.FC<CustomAlertModalProps> = ({ visible, title, message, onClose }) => {
-  return (
-    <Modal animationType="fade" transparent={true} visible={visible} onRequestClose={onClose}>
-      <View style={styles.modalContainer}>
-        <View style={styles.modalContent}>
-          <Text style={styles.modalTitle}>{title}</Text>
-          <Text style={styles.modalMessage}>{message}</Text>
+const AlertContext = createContext<AlertContextType | undefined>(undefined);
 
-          <TouchableOpacity style={styles.closeButton} onPress={onClose}>
-            <Text style={styles.closeButtonText}>OK</Text>
-          </TouchableOpacity>
-        </View>
-      </View>
-    </Modal>
+export const useCustomAlert = () => {
+  const context = useContext(AlertContext);
+  if (!context) {
+    throw new Error('useCustomAlert must be used within a CustomAlertProvider');
+  }
+  return context;
+};
+
+export const CustomAlertProvider = ({ children }: { children: ReactNode }) => {
+  const [alertVisible, setAlertVisible] = useState(false);
+  const [alertTitle, setAlertTitle] = useState('');
+  const [alertMessage, setAlertMessage] = useState('');
+
+  const showAlert = (title: string, message: string) => {
+    setAlertTitle(title);
+    setAlertMessage(message);
+    setAlertVisible(true);
+  };
+
+  const onClose = () => setAlertVisible(false);
+
+  return (
+    <AlertContext.Provider value={{ showAlert }}>
+      {children}
+      <Modal animationType="fade" transparent={true} visible={alertVisible} onRequestClose={onClose}>
+        <ThemedView style={styles.modalContainer}>
+          <ThemedView style={styles.modalContent}>
+            <ThemedText type='title'>{alertTitle}</ThemedText>
+            <ThemedText type='subtitle'>{alertMessage}</ThemedText>
+
+            <TouchableOpacity style={styles.closeButton} onPress={onClose}>
+              <Text style={styles.closeButtonText}>OK</Text>
+            </TouchableOpacity>
+          </ThemedView>
+        </ThemedView>
+      </Modal>
+    </AlertContext.Provider>
   );
 };
 
 const styles = StyleSheet.create({
-  modalContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-  },
-  modalContent: {
-    backgroundColor: '#FFF',
-    padding: 20,
-    borderRadius: 10,
-    width: '80%',
-    maxWidth: 400,
-    alignItems: 'center',
-  },
-  modalTitle: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    marginBottom: 10,
-  },
-  modalMessage: {
-    fontSize: 16,
-    textAlign: 'center',
-    marginBottom: 20,
-  },
+  ...MODALS_STYLES,
   ...CLOSE_BUTTON_STYLES,
 });
-
-export default CustomAlertModal;

@@ -7,17 +7,33 @@ import { ThemedView } from '@/components/ThemedView';
 import { ThemedText } from '@/components/ThemedText';
 import UserAccountUpdateModal from '../../modals/UserAccountUpdateModal';
 import { HEADER_IMAGE_STYLES } from '@/constants/HeaderImage';
-import { router } from 'expo-router';
+import CustomServer from '@/constants/CustomServer';
+
 
 const Page = () => {
-  const { authState, onLogout } = useAuth();
+  const { authState, onLogout, onVerifyEmail } = useAuth();
   const [modalVisible, setModalVisible] = useState(false);
 
   const onLogoutPressed = () => {
     onLogout!();
     
   };
-
+  const handleVerifyEmail = async () => {
+    try {
+      const response = await CustomServer.post('/api/auth/verify-email', {
+        token: authState?.token,
+      });
+  
+      if (response.data.success) {
+        onVerifyEmail?.(); // Update context
+        showAlert('Success', response.data.message || 'Email verified!');
+      } else {
+        showAlert('Error', 'Verification failed');
+      }
+    } catch (error) {
+      showAlert('Error', error.response?.data?.message || 'Something went wrong');
+    }
+  };
   return (
     <ParallaxScrollView headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
       headerImage={<Image source={require('@/assets/images/Logo-no-background.png')} style={styles.headerImageStyle} />}
@@ -35,7 +51,11 @@ const Page = () => {
         <TouchableOpacity style={styles.button} onPress={() => setModalVisible(true)}>
           <ThemedText style={styles.buttonText}>Update Account Info</ThemedText>
         </TouchableOpacity>
-
+        {authState?.emailVerified === false && (
+        <TouchableOpacity style={styles.button} onPress={handleVerifyEmail}>
+          <ThemedText style={styles.buttonText}>Press here to verify your email</ThemedText>
+        </TouchableOpacity>
+        )}
         <UserAccountUpdateModal visible={modalVisible} onClose={() => setModalVisible(false)} />
       </ThemedView>
     </ParallaxScrollView>

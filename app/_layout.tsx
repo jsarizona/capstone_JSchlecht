@@ -4,7 +4,7 @@ import { useColorScheme } from '@/hooks/useColorScheme';
 import { Stack, useRouter, useSegments} from 'expo-router';
 import { AuthProvider, useAuth } from '../context/AuthContext';
 import { useEffect } from 'react';
-
+import { CustomAlertProvider } from '@/modals/CustomAlertModal';
 
 
 const StackLayout = () => {
@@ -37,9 +37,13 @@ const RootLayoutNav = () => {
   const colorScheme = useColorScheme();
 	return (
 		<AuthProvider>
-      <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-			<StackLayout/>
-      </ThemeProvider>
+			<ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
+			<CustomAlertProvider>
+			
+					<StackLayout/>
+			
+			</CustomAlertProvider>
+			</ThemeProvider>
 		</AuthProvider>
 	);
 };

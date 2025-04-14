@@ -15,11 +15,18 @@ interface userData {
 }
 
 interface AuthProps {
-  authState: { authenticated: boolean | null; user: userData | null; token: string | null; pinVerified: string | null };
+  authState: {
+    authenticated: boolean | null;
+    user: userData | null;
+    token: string | null;
+    pinVerified: boolean | null;
+    emailVerified: boolean | null;
+  }
   onLogin: (token: string, userData: userData, pin?: string) => void;
   onLogout: () => void;
   onUpdate: (updatedUser: userData) => void;
   onVerify: () => void;
+  onVerifyEmail: () => void;
 }
 
 const AuthContext = createContext<Partial<AuthProps>>({});
@@ -34,11 +41,13 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     user: userData | null;
     token: string | null;
     pinVerified:  boolean | null;
+    emailVerified: boolean | null;
   }>({
     authenticated: false,
     user: null,
     token: null,
     pinVerified: false,
+    emailVerified: false,
   });
 
   // Load auth state on app start
@@ -49,11 +58,12 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         const storedAuthState = await AsyncStorage.getItem('authState');
         const storedAuthPin = await AsyncStorage.getItem('authPin')
         if (storedAuthState && storedAuthToken && storedAuthPin) {
-          console.log("found storedAuthState and Token", storedAuthState)
+          const parsed = JSON.parse(storedAuthState);
           setAuthState({
-            ...JSON.parse(storedAuthState),
+            ...parsed,
             token: storedAuthToken,
-            pinVerified: false,
+            pinVerified: false, // maybe true if you want to persist it
+            emailVerified: parsed.emailVerified || false,
           });
         }
       } catch (error) {
@@ -65,25 +75,26 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   }, []);
 
   // Login function
-  const login = async (token: string, userData: userData, pin?: string) => {
-    try {
-      const newState = {
-        authenticated: true,
-        user: userData,
-        token,
-        pinVerified: true
-      };
-  
-      await AsyncStorage.setItem('authToken', token);
-      await AsyncStorage.setItem('authState', JSON.stringify(newState));
-      await AsyncStorage.setItem('authPin', pin!)
-      setAuthState(newState);
-  
-      console.log("User logged in:", userData, "PIN:", pin);
-    } catch (error) {
-      console.error('Login error:', error);
-    }
-  };
+const login = async (token: string, userData: userData, pin?: string, emailVerified?: boolean) => {
+  try {
+    const newState = {
+      authenticated: true,
+      user: userData,
+      token,
+      pinVerified: true,
+      emailVerified: emailVerified || false,
+    };
+
+    await AsyncStorage.setItem('authToken', token);
+    await AsyncStorage.setItem('authState', JSON.stringify(newState));
+    await AsyncStorage.setItem('authPin', pin || '');
+    setAuthState(newState);
+
+    console.log("User logged in:", userData, "PIN:", pin, "Email Verified:", emailVerified);
+  } catch (error) {
+    console.error('Login error:', error);
+  }
+};
 
   // Logout function
   const logout = async () => {
@@ -95,7 +106,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         authenticated: false,
         user: null,
         token: null,
-        pinVerified: false
+        pinVerified: false,
+        emailVerified: false,
       });
 
       console.log('User logged out');
@@ -121,11 +133,28 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       console.error("Failed to update user in context:", error);
     }
   };
+  
+  const verifyEmail = async () => {
+    try {
+      const newState = {
+        ...authState,
+        emailVerified: true,
+      };
+  
+      await AsyncStorage.setItem('authState', JSON.stringify(newState));
+      setAuthState(newState);
+  
+      console.log("Email verified");
+    } catch (error) {
+      console.error("Error verifying email:", error);
+    }
+  };
 
   const value = {
     onLogin: login,
     onLogout: logout,
     onUpdate: updateUser,
+    onVerifyEmail: verifyEmail,
     authState
   };
 
