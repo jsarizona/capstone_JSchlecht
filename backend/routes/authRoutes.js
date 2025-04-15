@@ -44,6 +44,7 @@ router.post('/login', async (req, res) => {
     message: 'Login successful'
   });
   console.log('LoginSuccessfull');
+  console.log(user.emailVerified)
 });
 
 router.post('/register', async (req, res) => {

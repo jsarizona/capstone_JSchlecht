@@ -28,7 +28,6 @@ const Page = () => {
       });
       
       const { message, verified } = response.data;
-      console.log(verified);
       if (verified) {
         onVerifyEmail?.(); // Only run this if already verified
         showAlert('Already Verified', message);
@@ -58,7 +57,7 @@ const Page = () => {
         <TouchableOpacity style={styles.button} onPress={() => setModalVisible(true)}>
           <ThemedText style={styles.buttonText}>Update Account Info</ThemedText>
         </TouchableOpacity>
-        {authState?.emailVerified === false && (
+        {authState?.user?.emailVerified === false && (
         <TouchableOpacity style={styles.button} onPress={handleVerifyEmail}>
           <ThemedText style={styles.buttonText}>Press here to verify your email</ThemedText>
         </TouchableOpacity>

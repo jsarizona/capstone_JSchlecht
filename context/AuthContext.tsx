@@ -12,6 +12,7 @@ interface userData {
   name: string;
   email: string;
   role: Role;
+  emailVerified: boolean;
 }
 
 interface AuthProps {
@@ -20,7 +21,6 @@ interface AuthProps {
     user: userData | null;
     token: string | null;
     pinVerified: boolean | null;
-    emailVerified: boolean | null;
   }
   onLogin: (token: string, userData: userData, pin?: string) => void;
   onLogout: () => void;
@@ -41,13 +41,11 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     user: userData | null;
     token: string | null;
     pinVerified:  boolean | null;
-    emailVerified: boolean | null;
   }>({
     authenticated: false,
     user: null,
     token: null,
     pinVerified: false,
-    emailVerified: false,
   });
 
   // Load auth state on app start
@@ -78,14 +76,13 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   }, []);
 
   // Login function
-const login = async (token: string, userData: userData, pin?: string, emailVerified?: boolean) => {
+const login = async (token: string, userData: userData, pin?: string) => {
   try {
     const newState = {
       authenticated: true,
       user: userData,
       token,
       pinVerified: true,
-      emailVerified: emailVerified || false,
     };
 
     await AsyncStorage.setItem('authToken', token);
@@ -93,7 +90,7 @@ const login = async (token: string, userData: userData, pin?: string, emailVerif
     await AsyncStorage.setItem('authPin', pin || '');
     setAuthState(newState);
 
-    console.log("User logged in:", userData, "PIN:", pin, "Email Verified:", emailVerified);
+    console.log("(In Login Auth Context) User logged in:", userData, "PIN:", pin);
   } catch (error) {
     console.error('Login error:', error);
   }
@@ -110,7 +107,6 @@ const login = async (token: string, userData: userData, pin?: string, emailVerif
         user: null,
         token: null,
         pinVerified: false,
-        emailVerified: false,
       });
 
       console.log('User logged out');

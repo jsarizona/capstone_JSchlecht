@@ -42,14 +42,12 @@ export default function LoginScreen() {
   const [pendingLoginData, setPendingLoginData] = useState<{ token: string, user: any} | null>(null);
   
   const handleLogin = async () => {
-    
     try {
       const response = await CustomServer.post('/api/auth/login', { email, password });
       const { token, user } = response.data;
       if (token && user) {
         setPendingLoginData({ token, user });
         setPinModalVisible(true);
-        showAlert('Success', response.data.message);
       }
     } catch (error) {
       showAlert('Error', error.response?.data?.message || 'Something went wrong');
@@ -80,7 +78,7 @@ export default function LoginScreen() {
   
           const { token, user } = backendResponse.data;
           
-          console.log('Calling onLogin with:', token, user);
+          console.log('Calling onLogin google with:', token, user);
           setPendingLoginData({ token, user });
           setPinModalVisible(true);
           showAlert('Success', 'Logged in with Google');
@@ -104,6 +102,7 @@ export default function LoginScreen() {
       onLogin!(pendingLoginData.token, pendingLoginData.user, pin);
       setPendingLoginData(null);
       setPinModalVisible(false);
+      showAlert("Welcome", "Login Successful")
     } else {
       showAlert('Error', 'Invalid PIN or no login data');
     }
