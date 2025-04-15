@@ -8,11 +8,13 @@ import { ThemedText } from '@/components/ThemedText';
 import UserAccountUpdateModal from '../../modals/UserAccountUpdateModal';
 import { HEADER_IMAGE_STYLES } from '@/constants/HeaderImage';
 import CustomServer from '@/constants/CustomServer';
+import { useCustomAlert } from '@/modals/CustomAlertModal';
 
 
 const Page = () => {
   const { authState, onLogout, onVerifyEmail } = useAuth();
   const [modalVisible, setModalVisible] = useState(false);
+  const { showAlert } = useCustomAlert();
 
   const onLogoutPressed = () => {
     onLogout!();
@@ -20,20 +22,25 @@ const Page = () => {
   };
   const handleVerifyEmail = async () => {
     try {
-      const response = await CustomServer.post('/api/auth/verify-email', {
-        token: authState?.token,
+      
+      const response = await CustomServer.post('/api/auth/reverify-email', {
+        email: authState?.user?.email,
       });
-  
-      if (response.data.success) {
-        onVerifyEmail?.(); // Update context
-        showAlert('Success', response.data.message || 'Email verified!');
+      
+      const { message, verified } = response.data;
+      console.log(verified);
+      if (verified) {
+        onVerifyEmail?.(); // Only run this if already verified
+        showAlert('Already Verified', message);
       } else {
-        showAlert('Error', 'Verification failed');
+        showAlert('Verification Email Sent', message); // Not yet verified, email was resent
       }
+  
     } catch (error) {
       showAlert('Error', error.response?.data?.message || 'Something went wrong');
     }
   };
+  
   return (
     <ParallaxScrollView headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
       headerImage={<Image source={require('@/assets/images/Logo-no-background.png')} style={styles.headerImageStyle} />}

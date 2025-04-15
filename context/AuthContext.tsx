@@ -59,6 +59,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         const storedAuthPin = await AsyncStorage.getItem('authPin')
         if (storedAuthState && storedAuthToken && storedAuthPin) {
           const parsed = JSON.parse(storedAuthState);
+          console.log("In Load Auth State")
+          console.log(storedAuthPin)
+          console.log(parsed)
           setAuthState({
             ...parsed,
             token: storedAuthToken,

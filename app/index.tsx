@@ -32,7 +32,7 @@ export default function LoginScreen() {
     responseType: 'id_token',
     scopes: ['openid', 'profile', 'email'], // super important
   });
-  console.log(redirectUri)
+ 
   
   const { onLogin } = useAuth();
   const [email, setEmail] = useState('');
@@ -47,7 +47,6 @@ export default function LoginScreen() {
       const response = await CustomServer.post('/api/auth/login', { email, password });
       const { token, user } = response.data;
       if (token && user) {
-        console.log("showing pin", token, user)
         setPendingLoginData({ token, user });
         setPinModalVisible(true);
         showAlert('Success', response.data.message);
@@ -68,8 +67,7 @@ export default function LoginScreen() {
   };
   
   useEffect(() => {
-    console.log("response")
-    console.log(response)
+
     if (response?.type === 'success' && response?.params.id_token) {
       
       const loginWithGoogle = async () => {
