@@ -127,7 +127,7 @@ const login = async (token: string, userData: userData, pin?: string) => {
       await AsyncStorage.setItem('authState', JSON.stringify(newState));
       setAuthState(newState);
   
-      console.log("User info updated:", updatedUser);
+      console.log("User info updated");
     } catch (error) {
       console.error("Failed to update user in context:", error);
     }

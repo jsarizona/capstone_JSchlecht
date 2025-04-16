@@ -18,17 +18,6 @@ const Page = () => {
     router.replace('/index');
   };
   
-  const handleVerifyPin = (pin: string) => {
-    // You can add more checks or send PIN to backend here
-    console.log("Reaching Pin")
-    if (pin.length === 4 ) {
-      setPinModalVisible(false);
-      
-      router.replace('/(protected)')
-    } else {
-      
-    }
-  };
 
   return (
     <ParallaxScrollView headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
@@ -38,6 +27,7 @@ const Page = () => {
         <ThemedText type="title">Welcome Back! </ThemedText>
         <ThemedText type="title">Please Verify Pin or Logout</ThemedText>
         
+        <ThemedText type='subtitle'>Email: {authState?.user?.email}</ThemedText>
         <ThemedText type="subtitle">Name: {authState?.user?.name}</ThemedText>
 
         <TouchableOpacity style={styles.button} onPress={onLogoutPressed}>
@@ -47,7 +37,6 @@ const Page = () => {
       <PinModal
       visible={pinModalVisible}
       onClose={() => setPinModalVisible(false)}
-      onVerify={handleVerifyPin}
       />
     </ParallaxScrollView>
   

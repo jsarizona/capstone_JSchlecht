@@ -78,7 +78,7 @@ export default function LoginScreen() {
   
           const { token, user } = backendResponse.data;
           
-          console.log('Calling onLogin google with:', token, user);
+          
           setPendingLoginData({ token, user });
           setPinModalVisible(true);
           showAlert('Success', 'Logged in with Google');

@@ -11,10 +11,9 @@ import { router } from 'expo-router';
 interface PinModalProps {
   visible: boolean;
   onClose: () => void;
-  onVerify: (pin: string) => void;
 }
 
-const PinModal: React.FC<PinModalProps> = ({ visible, onClose, onVerify }) => {
+const PinModal: React.FC<PinModalProps> = ({ visible, onClose}) => {
   const [pin, setPin] = useState('');
   
   const handleVerify = async() => {

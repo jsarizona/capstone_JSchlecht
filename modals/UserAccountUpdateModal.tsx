@@ -1,11 +1,14 @@
 import React, { useState } from 'react';
-import { Modal, View, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
+import { Modal, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import { useAuth } from '@/context/AuthContext';
 import { BUTTON_STYLES } from '@/constants/Buttons';
 import { CLOSE_BUTTON_STYLES } from '@/constants/Close_Buttons';
 import { MODALS_STYLES } from '@/constants/Modals';
+import { useCustomAlert } from './CustomAlertModal';
+import CustomServer from '@/constants/CustomServer';
+
 
 interface Props {
   visible: boolean;
@@ -17,27 +20,51 @@ const UserAccountUpdateModal: React.FC<Props> = ({ visible, onClose }) => {
   const [name, setName] = useState(authState?.user?.name || '');
   const [role, setRole] = useState(authState?.user?.role || '');
   const [newPassword, setNewPassword] = useState('');
+  const [newPasswordVerify, setNewPasswordVerify] = useState('');
+  const { showAlert } = useCustomAlert();
 
   const handleUpdate = async () => {
-    
-    try {
-        console.error("Trying to Update");
-      const response = await fetch('http://192.168.6.181:5000/api/update/update', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email: authState?.user?.email, name, role, newPassword }),
-      });
+    if (newPassword !== newPasswordVerify) {
+      showAlert('Password Mismatch', 'The new passwords do not match.');
+      setNewPassword('');
+      setNewPasswordVerify('');
+      onClose();
+      return;
+    }
 
-      const data = await response.json();
-      if (response.ok) {
-        onUpdate?.(data.user); // Update auth context
-        console.log("Success")
-        onClose();
+    if (role !== 'user' && role !== 'admin') {
+      showAlert('Invalid Role', 'Role must be either "user" or "admin".');
+      onClose();
+      setRole('');  
+      return;
+    }
+  
+    try {
+      console.error("Trying to Update");
+      
+      // Replace with CustomServer.post instead of fetch
+      const response = await CustomServer.post('/api/update/update', {
+        email: authState?.user?.email,
+        name,
+        role,
+        newPassword,
+      });
+  
+      // Handle the response
+      if (response.status === 200) {
+        onUpdate?.(response.data.user); // Update auth context with new user data
+        console.log("Success");
+        onClose();  // Close the modal after the update attempt
       } else {
-        console.error(data.message);
+        console.error(response.data.message);
+        showAlert('Error', response.data.message || 'Something went wrong');
       }
     } catch (error) {
       console.error('Update failed:', error);
+      showAlert('Error', error.response?.data?.message || 'Something went wrong');
+      onClose();  // Close the modal in case of error as well
+      setNewPassword('');
+      setNewPasswordVerify('');
     }
   };
 
@@ -49,6 +76,7 @@ const UserAccountUpdateModal: React.FC<Props> = ({ visible, onClose }) => {
         <TextInput style={styles.input} value={name} onChangeText={setName} placeholder="Name" />
         <TextInput style={styles.input} value={role} onChangeText={setRole} placeholder="Role" />
         <TextInput style={styles.input} value={newPassword} onChangeText={setNewPassword} placeholder="New Password" secureTextEntry />
+        <TextInput style={styles.input} value={newPasswordVerify} onChangeText={setNewPasswordVerify} placeholder="Verify New Password" secureTextEntry />
 
         <TouchableOpacity style={styles.button} onPress={handleUpdate}>
           <ThemedText style={styles.buttonText}>Save Changes</ThemedText>
