@@ -81,7 +81,7 @@ export default function LoginScreen() {
           
           setPendingLoginData({ token, user });
           setPinModalVisible(true);
-          showAlert('Success', 'Logged in with Google');
+          
         } catch (err) {
           console.error('Google login error:', err);
           showAlert('Error', err.response?.data?.message || 'Google login failed');

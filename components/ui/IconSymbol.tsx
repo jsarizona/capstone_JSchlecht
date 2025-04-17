@@ -15,6 +15,7 @@ const MAPPING = {
   'chevron.right': 'chevron-right',
   'person.fill' : 'person',
   'login.fill' : 'login',
+  'manage.fill' : 'manage-accounts',
 } as Partial<
   Record<
     import('expo-symbols').SymbolViewProps['name'],
