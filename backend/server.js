@@ -21,3 +21,11 @@ app.use('/api/users', getUsers)
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+
+/*
+// Start HTTPS server
+const PORT = process.env.PORT || 5000;
+https.createServer(sslOptions, app).listen(PORT, () =>
+  console.log(`🚀 HTTPS Server running at https://localhost:${PORT}`)
+);
+*/

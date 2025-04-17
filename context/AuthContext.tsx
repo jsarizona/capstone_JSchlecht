@@ -63,7 +63,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
           setAuthState({
             ...parsed,
             token: storedAuthToken,
-            pinVerified: false, // maybe true if you want to persist it
+            pinVerified: false,
             emailVerified: parsed.emailVerified || false,
           });
         }

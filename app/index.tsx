@@ -58,7 +58,7 @@ export default function LoginScreen() {
     try {
       const response = await CustomServer.post('/api/auth/register', { email: registerEmail, password: registerPassword });
       showAlert('Success', response.data.message);
-      setModalVisible(false); // Close modal on success
+      setModalVisible(false);
     } catch (error) {
       showAlert('Error', error.response?.data?.message || 'Something went wrong');
     }

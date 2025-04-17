@@ -2,6 +2,7 @@
 import axios from 'axios';
 
 const BASE_URL = 'http://192.168.6.181:5000';
+const BASE_SECURE_URL = 'https://192.168.6.181:5000';
 
 const CustomServer = axios.create({
   baseURL: BASE_URL,
